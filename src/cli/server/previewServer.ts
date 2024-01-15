@@ -165,13 +165,13 @@ app.use('/', (req, res) => {
     .replace(/\$PORT/g, `${wsPort}`);
   let indexHtml = fs.readFileSync(INDEX_PATH, 'utf-8');
   indexHtml += `<script>${reloadScriptContent}</script>`;
-  indexHtml = injectToHead(
-    indexHtml,
-    `<link rel="shortcut icon" href="${FAV_ICON_PATH}">
-  <title>Jest Preview Dashboard</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">`,
-  );
+  // indexHtml = injectToHead(
+  //   indexHtml,
+  //   `<link rel="shortcut icon" href="${FAV_ICON_PATH}">
+  // <title>Jest Preview Dashboard</title>
+  // <meta charset="UTF-8">
+  // <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">`,
+  // );
   res.end(indexHtml);
 });
 
