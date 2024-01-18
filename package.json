@@ -1,6 +1,6 @@
 {
   "name": "@honeybook/jest-preview",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Preview your Jest tests in a browser",
   "keywords": [
     "testing",
