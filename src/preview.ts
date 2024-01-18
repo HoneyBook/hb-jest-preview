@@ -15,6 +15,7 @@ const nameToDocument: Record<string, string> = {};
 
 export function debug(
   name: string = `preview (${Object.keys(nameToDocument).length + 1})`,
+  { removeOpacityForAnimatedElements = true } = {},
 ): void {
   if (!fs.existsSync(CACHE_FOLDER)) {
     fs.mkdirSync(CACHE_FOLDER, {
@@ -43,9 +44,12 @@ export function debug(
   const unescapeScript = `<script>const unescapeHtml = (text) => {return text.replaceAll('&amp;','&').replaceAll('&lt;','<').replaceAll('&gt;','>').replaceAll('&quot;','"').replaceAll('&#039;',"'")}</script>`;
   const keyboardEventScript = `<script>window.addEventListener('load', () => {document.onkeydown = (e) => {if (e.keyCode == '39' && document.activeElement.nextElementSibling.matches('.${buttonClass}')) {document.activeElement.nextElementSibling.focus()} else if (e.keyCode == '37') {document.activeElement.previousElementSibling?.focus()}}})</script>`;
   const onLoadSelectFirstButtonScript = `<script>window.addEventListener('load', () => {const firstButton = document.querySelectorAll('.${buttonClass}')[0]; firstButton.focus(); firstButton.click();})</script>`;
+  const removeOpacityScript = removeOpacityForAnimatedElements
+    ? `<script>window.addEventListener('load', () => {let iframe = document.getElementById('content').contentWindow; [...iframe.document.querySelectorAll("[style*='opacity:']")].forEach(element => (element.style.opacity = ''));})<\/script>`
+    : ``;
   const style = `<style>.${buttonClass}:focus{border:2px solid blue;}</style>`;
   const head = `<head>${style}</head>`;
-  const body = `<body style="margin:0;">${buttons}${iframe}${globalVariablesScripts}${unescapeScript}${onLoadSelectFirstButtonScript}${keyboardEventScript}</body>`;
+  const body = `<body style="margin:0;">${buttons}${iframe}${globalVariablesScripts}${unescapeScript}${onLoadSelectFirstButtonScript}${keyboardEventScript}${removeOpacityScript}</body>`;
   const html = `<html>${head}${body}</html>`;
   fs.writeFileSync(path.join(CACHE_FOLDER, 'index.html'), html);
 }
