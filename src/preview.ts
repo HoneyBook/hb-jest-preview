@@ -29,7 +29,11 @@ export function debug(
   let buttons = '';
   let globalVariablesScripts = '';
   Object.entries(nameToDocument).forEach(([currName, currDoc]) => {
-    const buttonOnClickHandler = `let iframe = document.getElementById('content').contentWindow.document;iframe.documentElement.innerHTML=unescapeHtml(window['${currName}'])`;
+    const buttonOnClickHandler = `let iframe = document.getElementById('content').contentWindow.document;iframe.documentElement.innerHTML=unescapeHtml(window['${currName}']); ${
+      removeOpacityForAnimatedElements
+        ? `window.removeOpacityFromAnimatedElements();`
+        : ``
+    }`;
     const buttonOnFocusHandler = `this.click()`;
     const button = `<button onclick="${buttonOnClickHandler}" onfocus="${buttonOnFocusHandler}" class="${buttonClass}">${currName}</button>`;
     buttons += button;
@@ -45,7 +49,7 @@ export function debug(
   const keyboardEventScript = `<script>window.addEventListener('load', () => {document.onkeydown = (e) => {if (e.keyCode == '39' && document.activeElement.nextElementSibling.matches('.${buttonClass}')) {document.activeElement.nextElementSibling.focus()} else if (e.keyCode == '37') {document.activeElement.previousElementSibling?.focus()}}})</script>`;
   const onLoadSelectFirstButtonScript = `<script>window.addEventListener('load', () => {const firstButton = document.querySelectorAll('.${buttonClass}')[0]; firstButton.focus(); firstButton.click();})</script>`;
   const removeOpacityScript = removeOpacityForAnimatedElements
-    ? `<script>window.addEventListener('load', () => {let iframe = document.getElementById('content').contentWindow; [...iframe.document.querySelectorAll("[style*='opacity:']")].forEach(element => (element.style.opacity = ''));})<\/script>`
+    ? `<script>window.removeOpacityFromAnimatedElements = function() {let iframe = document.getElementById('content').contentWindow; [...iframe.document.querySelectorAll("[style*='opacity:']")].forEach(element => (element.style.opacity = ''));}; window.addEventListener('load', removeOpacityFromAnimatedElements)</script>`
     : ``;
   const style = `<style>.${buttonClass}:focus{border:2px solid blue;}</style>`;
   const head = `<head>${style}</head>`;
